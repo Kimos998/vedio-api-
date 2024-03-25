@@ -6,6 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading Message Example</title>
     <style>
+    
+    
+    
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .section {
+        width: 100%;
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .section-header {
+        background-color: #333;
+        color: white;
+        font-size: 1em;
+            margin-top: 20px;
+    }
+    .section-video {
+        background-color: #f9f9f9;
+    }
+    .section-description {
+        background-color: #ddd;
+        font-size: 1em;
+    }
+    video {
+        max-width: 100%;
+        height: auto;
+        width: 100%;
+    }
+    
+    
+    
+    
+    
+    
         body {
             margin: 0;
             padding: 0;
@@ -31,8 +69,12 @@
         }
 
         #app {
-            text-align: center;
-            max-width: 80%;
+     text-align: center;
+    max-width: 80%;
+   margin-right: 100px;
+    margin-left: 100px;
+   
+   
         }
 
         .loading-message {
@@ -61,13 +103,30 @@
     </div>
 
     <div class="main-content">
-        <div id="app">
+    
+    <div id="app">
             <div v-if="displayedBeers.length > 0">
                 <div v-for="(beer, index) in displayedBeers" :key="index">
-                    <h2>{{ beer.description }}</h2>
-                    <i>{{ beer.url }}</i>
-                    <p>{{ beer.category }}</p>
+    
+    <div class="container">
+    <div class="section section-header">
+        <h2>{{beer.description}}</h2>
+    </div>
+    <div class="section section-video">
+        <video controls>
+            <source src= {beer.url} type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="section section-description">
+        <p>{{beer.category}}</p>
+    </div>
+</div>
+
+
                 </div>
+          
+                
                 <button v-if="currentIndex > 0" @click="goBack" class="backbtn">Back</button>
                 <button v-if="displayedBeers.length === itemsPerPage && currentIndex + itemsPerPage < beers.length" @click="showMore">Read More</button>
                 <p v-if="!displayedBeers.length && showMessage" style="color: red; font-weight: bold; margin-top: 20px;">The end</p>
