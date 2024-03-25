@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Message Example</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header, .footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto; /* يسمح بالتمرير عندما يكون المحتوى أكبر من الشاشة */
+        }
+
+        #app {
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .loading-message {
+            font-weight: bold;
+            color: black;
+            font-size: 24px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h3>VVIOS</h3>
+    </div>
+
+    <div class="main-content">
+        <div id="app">
+            <div v-if="displayedBeers.length > 0">
+                <div v-for="(beer, index) in displayedBeers" :key="index">
+                    <h2>{{ beer.description }}</h2>
+                    <i>{{ beer.url }}</i>
+                    <p>{{ beer.category }}</p>
+                </div>
+                <button v-if="currentIndex > 0" @click="goBack" class="backbtn">Back</button>
+                <button v-if="displayedBeers.length === itemsPerPage && currentIndex + itemsPerPage < beers.length" @click="showMore">Read More</button>
+                <p v-if="!displayedBeers.length && showMessage" style="color: red; font-weight: bold; margin-top: 20px;">The end</p>
+                <p v-if="showEndMessage" style="font-weight: bold; margin-top: 20px;">The end</p>
+            </div>
+            <p v-else-if="showMessage" class="loading-message" id="loadingMessage">Please wait...</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>حقوق الطبع محفوظة &copy; 2024 اسم الموقع</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                beers: [],
+                displayedBeers: [],
+                itemsPerPage: 6,
+                currentIndex: 0,
+                showMessage: true,
+                showEndMessage: false
+            },
+            mounted() {
+                fetch('https://script.googleusercontent.com/macros/echo?user_content_key=JT_FSAAFbJI-ly4bVnCjV5bwk8xvkeMfLy7umuifbzFwBQsVimEGYX-F2vaky6eLqVm2r7Udug_ERaMwg87pGKdzPLcTF5fUm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnITA8bdDrEEUk3Mg5M9z5AAz-0lb6vSeKf7au4u1EQg_cOMSLqB5eDue-d7ckGlTjRC2VKWnHs6C1eAY7xLFF_eBmqR6UpUDVQ&lib=MXlNU7ZMZZqY7f8FZlBkz_u-TjKIvX8ZV')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.beers = data;
+                        this.displayedBeers = this.beers.slice(this.currentIndex, this.itemsPerPage);
+                        if (this.displayedBeers.length === 0) {
+                            this.showMessage = true;
+                        }
+                        if (this.displayedBeers.length < this.itemsPerPage || this.currentIndex + this.itemsPerPage >= this.beers.length) {
+                            this.showEndMessage = true;
+                        }
+                        setTimeout(() => {
+                            this.showMessage = false;
+                        }, 3500);
+                    });
+            },
+            methods: {
+                showMore() {
+                    this.currentIndex += this.itemsPerPage;
+                    this.displayedBeers = this.beers.slice(this.currentIndex, this.currentIndex + this.itemsPerPage);
+                    if (this.displayedBeers.length < this.itemsPerPage || this.currentIndex + this.itemsPerPage >= this.beers.length) {
+                        this.showEndMessage = true;
+                    }
+                },
+                goBack() {
+                    this.currentIndex -= this.itemsPerPage;
+                    this.displayedBeers = this.beers.slice(this.currentIndex, this.currentIndex + this.itemsPerPage);
+                    this.showEndMessage = false;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
